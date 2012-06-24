@@ -71,6 +71,16 @@ public class Cleaner {
 		return contact;
 	}
 
+	private List<Email> cleanEmailAddresses(List<Email> emailAddresses) {
+		for (Email email : emailAddresses) {
+			email.setAddress(email.getAddress().toLowerCase());
+			if (logger.isDebugEnabled()) {
+				logger.debug("Cleanup email address : " + email.getAddress());
+			}
+		}
+		return emailAddresses;
+	}
+
 	private List<Email> cleanEmailDoubles(List<Email> emailAddresses) {
 		List<String> emailAddressesList = new ArrayList<String>();
 		List<Email> tempEmailAddresses = new ArrayList<Email>(emailAddresses);
@@ -98,6 +108,7 @@ public class Cleaner {
 		cleanPhoneNumbers(entry.getPhoneNumbers());
 		cleanPhoneNumberDoubles(entry.getPhoneNumbers());
 		cleanNotes(entry);
+		cleanEmailAddresses(entry.getEmailAddresses());
 		cleanEmailDoubles(entry.getEmailAddresses());
 		return entry;
 	}
