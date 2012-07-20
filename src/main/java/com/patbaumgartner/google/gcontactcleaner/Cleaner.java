@@ -12,6 +12,9 @@ import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.contacts.ContactEntry;
 import com.google.gdata.data.contacts.ContactFeed;
 import com.google.gdata.data.extensions.Email;
+import com.google.gdata.data.extensions.FamilyName;
+import com.google.gdata.data.extensions.GivenName;
+import com.google.gdata.data.extensions.Name;
 import com.google.gdata.data.extensions.PhoneNumber;
 
 public class Cleaner {
@@ -34,6 +37,10 @@ public class Cleaner {
 		phoneNumber = phoneNumber.replace(" ", "");
 		phoneNumber = phoneNumber.replace("-", "");
 		phoneNumber = phoneNumber.trim();
+		if (phoneNumber.startsWith("00")) {
+			phoneNumber = phoneNumber.substring(2);
+			phoneNumber = "+" + phoneNumber;
+		}
 		return phoneNumber;
 	}
 
@@ -73,7 +80,7 @@ public class Cleaner {
 
 	private List<Email> cleanEmailAddresses(List<Email> emailAddresses) {
 		for (Email email : emailAddresses) {
-			email.setAddress(email.getAddress().toLowerCase());
+			email.setAddress(email.getAddress().toLowerCase().trim());
 			if (logger.isDebugEnabled()) {
 				logger.debug("Cleanup email address : " + email.getAddress());
 			}
@@ -105,6 +112,7 @@ public class Cleaner {
 			}
 			logger.debug("Cleanup Contact Entry : " + name);
 		}
+		cleanName(entry.getName());
 		cleanPhoneNumbers(entry.getPhoneNumbers());
 		cleanPhoneNumberDoubles(entry.getPhoneNumbers());
 		cleanNotes(entry);
@@ -113,6 +121,28 @@ public class Cleaner {
 		return entry;
 	}
 
+	private void cleanName(Name name) {
+		if (name != null) {
+			GivenName givenName = name.getGivenName();
+			if (givenName != null) {
+				String firstName = givenName.getValue();
+				firstName = firstName.trim();
+				givenName.setValue(firstName);
+				givenName.setYomi(null);
+			}
+
+			FamilyName familyName = name.getFamilyName();
+			if (familyName != null) {
+				String lastName = familyName.getValue();
+				lastName = lastName.trim();
+				familyName.setValue(lastName);
+				familyName.setYomi(null);
+			}
+			name.setNamePrefix(null);
+			name.setNameSuffix(null);
+		}
+	}
+	
 	public List<ContactEntry> cleanupContacts(List<ContactEntry> entries) {
 		for (ContactEntry entry : entries) {
 			entry = cleanupContact(entry);
