@@ -11,8 +11,10 @@ import com.google.gdata.client.contacts.ContactsService;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.contacts.ContactEntry;
 import com.google.gdata.data.contacts.ContactFeed;
+import com.google.gdata.data.extensions.AdditionalName;
 import com.google.gdata.data.extensions.Email;
 import com.google.gdata.data.extensions.FamilyName;
+import com.google.gdata.data.extensions.FullName;
 import com.google.gdata.data.extensions.GivenName;
 import com.google.gdata.data.extensions.Name;
 import com.google.gdata.data.extensions.PhoneNumber;
@@ -127,6 +129,7 @@ public class Cleaner {
 			if (givenName != null) {
 				String firstName = givenName.getValue();
 				firstName = firstName.trim();
+				givenName.setImmutable(false);
 				givenName.setValue(firstName);
 				givenName.setYomi(null);
 			}
@@ -135,9 +138,29 @@ public class Cleaner {
 			if (familyName != null) {
 				String lastName = familyName.getValue();
 				lastName = lastName.trim();
+				familyName.setImmutable(false);
 				familyName.setValue(lastName);
 				familyName.setYomi(null);
 			}
+			
+			AdditionalName additionalName = name.getAdditionalName();
+			if (additionalName != null) {
+				String middleName = additionalName.getValue();
+				middleName = middleName.trim();
+				additionalName.setImmutable(false);
+				additionalName.setValue(middleName);
+				additionalName.setYomi(null);
+			}
+			
+			FullName fullName = name.getFullName();
+			if (fullName != null) {
+				String wholeName = fullName.getValue();
+				wholeName = wholeName.trim();
+				fullName.setImmutable(false);
+				fullName.setValue(wholeName);
+				fullName.setYomi(null);
+			}
+
 			name.setNamePrefix(null);
 			name.setNameSuffix(null);
 		}
