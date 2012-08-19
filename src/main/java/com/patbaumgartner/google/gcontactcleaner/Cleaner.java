@@ -33,6 +33,18 @@ public class Cleaner {
 		ContactFeed resultFeed = createContactFeed(myService);
 		List<ContactEntry> entries = cleanupContacts(resultFeed.getEntries());
 		entries = updatedContacts(myService, entries);
+		removeEmptyContacts(entries);
+	}
+
+	private void removeEmptyContacts(List<ContactEntry> entries) throws Exception {
+		for(ContactEntry contact: entries){
+			if(!contact.hasPhoneNumbers() && !contact.hasEmailAddresses()){
+				if(logger.isDebugEnabled()){
+					logger.debug("Delete Empty Contact : " + contact.getName().getFullName().getValue());
+					contact.delete();
+				}
+			}
+		}
 	}
 
 	public String cleanPhoneNumer(String phoneNumber) {
@@ -180,7 +192,7 @@ public class Cleaner {
 	}
 
 	public ContactFeed createContactFeed(ContactsService myService) throws Exception {
-		URL feedUrl = new URL("https://www.google.com/m8/feeds/contacts/default/full/?max-results=1000");
+		URL feedUrl = new URL("https://www.google.com/m8/feeds/contacts/default/full/?max-results=2000");
 		ContactFeed resultFeed = myService.getFeed(feedUrl, ContactFeed.class);
 		return resultFeed;
 	}
