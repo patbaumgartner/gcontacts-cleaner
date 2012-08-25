@@ -203,7 +203,7 @@ public class Cleaner {
 			if (name == "") {
 				name = entry.getName().getFullName().toString();
 			}
-			logger.debug("Update Contact Entry : " + entry.getTitle().getPlainText());
+			logger.debug("Update Contact Entry : " + entry.getName().getFullName().getValue());
 		}
 		URL editUrl = new URL(entry.getEditLink().getHref());
 		return myService.update(editUrl, entry);
